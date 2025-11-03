@@ -1,5 +1,13 @@
 framework:
     cache:
+        app: cache.adapter.filesystem
+        system: cache.adapter.system
+
+        pools:
+            clients.cache:
+                adapter: cache.app
+            rechnung_token.cache:
+                adapter: cache.app
         # Unique name of your app: used to compute stable namespaces for cache keys.
         #prefix_seed: your_vendor_name/app_name
 
@@ -16,4 +24,4 @@ framework:
 
         # Namespaced pools use the above "app" backend by default
         #pools:
-            #my.dedicated.cache: null
+        #my.dedicated.cache: null
