@@ -1,0 +1,8 @@
+name: bahuma-management
+recipe: symfony
+config:
+  webroot: public
+  php: '8.3'
+services:
+  pma:
+    type: phpmyadmin
