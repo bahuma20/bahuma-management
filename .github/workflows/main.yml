@@ -52,4 +52,4 @@ jobs:
                     username: bahuma-me
                     key: ${{ secrets.SSH_PRIVATE_KEY }}
                     port: 22
-                    script: cd /var/www/vhosts/bahuma.de/httpdocs/management && /opt/plesk/php/8.3/bin/php bin/console cache:clear && /opt/plesk/php/8.3/bin/php bin/console doctrine:migrations:migrate && /opt/plesk/php/8.3/bin/php bin/console cache:clear && /opt/plesk/php/8.3/bin/php bin/console assets:install
+                    script: cd /var/www/vhosts/bahuma.de/httpdocs/management && /opt/plesk/php/8.3/bin/php bin/console cache:clear && /opt/plesk/php/8.3/bin/php bin/console doctrine:migrations:migrate && /opt/plesk/php/8.3/bin/php bin/console cache:clear && /opt/plesk/php/8.3/bin/php bin/console assets:install && /opt/plesk/php/8.3/bin/php bin/console importmap:install
