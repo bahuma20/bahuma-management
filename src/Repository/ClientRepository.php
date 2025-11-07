@@ -70,6 +70,11 @@ class ClientRepository
                 $client = new Client();
                 $client->setId($data['id']);
                 $client->setName($data['name']);
+                $client->setContactName($data['contact_name']);
+                if ($data['email'] == null) {
+                    throw new RuntimeException('Kunde ' . $client->getName() . ' hat keine E-Mail Adresse');
+                }
+                $client->setEmail($data['email']);
                 $clients[] = $client;
             }
 
@@ -81,5 +86,20 @@ class ClientRepository
     {
         $this->rechnungTokenCache->clear();
         $this->clientsCache->clear();
+    }
+
+    public function findById(string $id)
+    {
+        $clients = $this->find();
+
+        $results = array_values(array_filter($clients, function (Client $client) use ($id) {
+            return $client->getId() === $id;
+        }));
+
+        if (count($results) === 0) {
+            throw new \RuntimeException('Could not find a client with id ' . $id);
+        }
+
+        return $results[0];
     }
 }

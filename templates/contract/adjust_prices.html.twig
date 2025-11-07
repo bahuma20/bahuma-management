@@ -1,0 +1,64 @@
+{# ./src/templates/home/index.html.twig #}
+{% extends '@!EasyAdmin/layout.html.twig' %}
+
+{# Let\'s remove/empty the header #}
+{% block content_header_wrapper %} {% endblock content_header_wrapper %}
+
+{# The main page content block #}
+{% block main %}
+    {% if adjustedContracts %}
+        <h2>{% if form|default %}Vorschau{% else %}Mail-Texte{% endif %}</h2>
+        {% if not form|default %}<p>Sende diese Mails an deine Kunden.</p>{% endif %}
+        {% for adjustedContract in adjustedContracts %}
+            <div>
+                <div>
+                    An: <strong>{{ adjustedContract.client.name }}</strong>
+                </div>
+                <div>
+                    Mail: <strong>{{ adjustedContract.client.email }}</strong>
+                </div>
+                <div>
+                    <textarea style="width: 100%; height: 300px">{{ adjustedContract.mailtext | trim }}</textarea>
+                </div>
+            </div>
+        {% endfor %}
+
+        <hr>
+    {% endif %}
+
+    {% if form|default %}
+
+        <h2>Preisanpassung</h2>
+
+        {{ form(form) }}
+
+        <script>
+            const inputs = document.querySelectorAll('input[data-current-price]')
+            console.log(inputs)
+            inputs.forEach(input => {
+                input.addEventListener('input', e => {
+                    const percentage = parseInt(e.target.value) / 100 + 1;
+                    const currentPrice = parseFloat(e.target.dataset.currentPrice);
+                    if (isNaN(percentage)) {
+                        return
+                    }
+
+                    const newPrice = currentPrice * percentage;
+
+                    const $helpText = e.target.parentNode.parentNode.querySelector('.help-text');
+                    let $span = $helpText.querySelector('div');
+
+                    if (!$span) {
+                        $span = document.createElement('div');
+                        $helpText.appendChild($span)
+                    }
+
+                    $span.innerText = `Neuer Preis: ${newPrice.toFixed(2)} €`
+                })
+            })
+        </script>
+    {% endif %}
+{% endblock main %}
+
+{# Let\'s remove/empty the footer #}
+{% block content_footer_wrapper %} {% endblock content_footer_wrapper %}

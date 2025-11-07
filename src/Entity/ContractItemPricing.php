@@ -8,8 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 enum PricingPeriod: string
 {
-    case Monthly = 'monthly';
-    case Yearly = 'yearly';
+    case Monat = 'monthly';
+    case Jahr = 'yearly';
 }
 
 #[ORM\Entity(repositoryClass: ContractItemPricingRepository::class)]
