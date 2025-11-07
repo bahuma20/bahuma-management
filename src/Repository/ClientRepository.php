@@ -61,7 +61,7 @@ class ClientRepository
         $httpClient = $this->httpClient;
 
         return $this->clientsCache->get('clients_list', function () use ($httpClient) {
-            $response = $httpClient->request('GET', '/api/v1/customers');
+            $response = $httpClient->request('GET', '/api/v1/customers?limit=100');
             $content = $response->toArray();
 
             $clients = [];
