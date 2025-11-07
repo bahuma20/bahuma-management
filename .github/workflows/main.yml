@@ -42,7 +42,7 @@ jobs:
                     path: ./
                     remote_path: /var/www/vhosts/bahuma.de/httpdocs/management
                     remote_host: server4.bahuma.io
-                    remote_user: kolping-dietfurt
+                    remote_user: bahuma-me
                     remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
             -   name: executing post upload actions via ssh
