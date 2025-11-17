@@ -152,9 +152,9 @@ class InvoiceService
 
         $itemsBody = [];
 
-        foreach ($activeItems as $item) {
+        foreach ($activeItems as $activeItem) {
 
-            $pricing = $this->getActivePricing($item->getPricings());
+            $pricing = $this->getActivePricing($activeItem->getPricings());
 
             $quantity = 12;
 
@@ -170,9 +170,9 @@ class InvoiceService
 
 
             $itemsBody[] = [
-                'item_id' => ContractItemService::getInvoiceShelfId($item->getType()),
-                'name' => ContractItemService::getLabel($item->getType()),
-                'description' => $item->getComment() ? str_replace("\r", '', $item->getComment()) : '',
+                'item_id' => ContractItemService::getInvoiceShelfId($activeItem->getType()),
+                'name' => ContractItemService::getLabel($activeItem->getType()),
+                'description' => $activeItem->getComment() ? str_replace("\r", '', $activeItem->getComment()) : '',
                 'quantity' => strval($quantity),
                 'price' => strval($price),
                 'total' => strval($total),
