@@ -7,11 +7,11 @@ use App\Entity\Contract;
 use App\Entity\ContractItem;
 use App\Entity\ContractItemPricing;
 use App\Repository\ClientRepository;
-use App\Repository\ContractItemPricingRepository;
 use App\Repository\ContractItemRepository;
 use App\Repository\ContractRepository;
 use App\Service\Adjustment;
 use App\Service\ContractPriceAdjustmentService;
+use App\Service\InvoiceService;
 use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -22,6 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use PHPUnit\Event\RuntimeException;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -38,12 +39,12 @@ use Twig\Environment;
 class ContractCrudController extends AbstractCrudController
 {
 
-    public function __construct(private ClientRepository               $clientRepository,
-                                private ContractRepository             $contractRepository,
-                                private ContractItemRepository         $contractItemRepository,
-                                private ContractItemPricingRepository  $contractItemPricingRepository,
-                                private EntityManagerInterface         $entityManager,
-                                private ContractPriceAdjustmentService $contractPriceAdjustmentService)
+    public function __construct(private readonly ClientRepository               $clientRepository,
+                                private readonly ContractRepository             $contractRepository,
+                                private readonly ContractItemRepository         $contractItemRepository,
+                                private readonly EntityManagerInterface         $entityManager,
+                                private readonly ContractPriceAdjustmentService $contractPriceAdjustmentService,
+                                private readonly InvoiceService                 $invoiceService)
     {
     }
 
@@ -67,10 +68,17 @@ class ContractCrudController extends AbstractCrudController
             ->linkToRoute('adjust_prices')
             ->createAsGlobalAction();
 
+        $syncInvoicesAction = Action::new('sync_invoices')
+            ->setLabel('Rechnungen in InvoiceShelf aktualisieren')
+            ->linkToRoute('sync_invoices')
+            ->createAsGlobalAction();
+
 
         return $actions
             ->add(Crud::PAGE_INDEX, $clearCacheAction)
-            ->add(Crud::PAGE_INDEX, $adjustPriceAction);
+            ->add(Crud::PAGE_INDEX, $adjustPriceAction)
+            ->add(Crud::PAGE_INDEX, $syncInvoicesAction);
+
     }
 
 
@@ -86,6 +94,7 @@ class ContractCrudController extends AbstractCrudController
         return [
             FormField::addColumn('col-12'),
             IdField::new('id')->setDisabled(),
+            TextField::new('recurringInvoiceId')->setRequired(false),
             ChoiceField::new('client')
                 ->setChoices($clients)
                 ->setRequired(true)
@@ -175,6 +184,28 @@ class ContractCrudController extends AbstractCrudController
             'form' => $form,
             'adjustedContracts' => $adjustedContracts,
         ]);
+    }
+
+    #[Route(path: 'sync-invoices', name: 'sync_invoices', methods: ['GET'])]
+    public function syncInvoices()
+    {
+        $contracts = $this->contractRepository->findAll();
+
+        $syncedInvoices = 0;
+
+        foreach ($contracts as $contract) {
+            $somethingToDo = $this->invoiceService->syncInvoice($contract);
+            if ($somethingToDo) {
+                $syncedInvoices++;
+            }
+        }
+
+        $this->addFlash('success', $syncedInvoices . ' von ' . count($contracts) . ' Rechnungen wurden synchronisiert');
+        $url = $this->container->get(AdminUrlGenerator::class)
+            ->setController(ContractCrudController::class)
+            ->setAction(Action::INDEX)
+            ->generateUrl();
+        return new RedirectResponse($url);
     }
 
     private function getContractItemsToAdjust()

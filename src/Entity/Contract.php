@@ -19,6 +19,9 @@ class Contract
     #[ORM\Column(length: 255)]
     private ?string $client = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $recurringInvoiceId = null;
+
     /**
      * @var Collection<int, ContractItem>
      */
@@ -46,6 +49,16 @@ class Contract
         $this->client = $client;
 
         return $this;
+    }
+
+    public function getRecurringInvoiceId(): ?string
+    {
+        return $this->recurringInvoiceId;
+    }
+
+    public function setRecurringInvoiceId(?string $recurringInvoiceId): void
+    {
+        $this->recurringInvoiceId = $recurringInvoiceId;
     }
 
     /**
