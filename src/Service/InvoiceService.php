@@ -147,7 +147,7 @@ class InvoiceService
 
     private function buildItems(Contract $contract): array
     {
-        $this->logger->debug('There are ' . count($contract->getItems()) . ' items for contract $contract->getId()', ['contract' => $contract]);
+        $this->logger->debug('There are ' . count($contract->getItems()) . ' items for contract ' . $contract->getId(), ['contract' => $contract]);
 
         /** @var ContractItem[] $activeItems */
         $activeItems = [];
