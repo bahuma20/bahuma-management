@@ -49,6 +49,10 @@ class InvoiceService
         }
 
         try {
+            $this->logger->debug('Creating recurring invoice for contract ' . $contract->getId(), [
+                'body' => json_encode($body),
+            ]);
+
             $response = $this->httpClient->request('POST', '/api/v1/recurring-invoices', [
                 'body' => json_encode($body),
             ]);
@@ -74,7 +78,7 @@ class InvoiceService
         return true;
     }
 
-    private function updateRecurringInvoice(?string $recurringInvoiceId, Contract $contract)
+    private function updateRecurringInvoice(string $recurringInvoiceId, Contract $contract)
     {
         $this->logger->info('Syncing contract ' . $contract->getId() . ' with action UPDATE');
 
@@ -85,6 +89,11 @@ class InvoiceService
         }
 
         try {
+            $this->logger->debug('Updating recurring invoice for contract' . $contract->getId(), [
+                'recurringInvoiceId' => $recurringInvoiceId,
+                'body' => json_encode($body),
+            ]);
+
             $this->httpClient->request('PUT', '/api/v1/recurring-invoices/' . $recurringInvoiceId, [
                 'body' => json_encode($body),
             ]);
