@@ -147,6 +147,8 @@ class InvoiceService
 
     private function buildItems(Contract $contract): array
     {
+        $this->logger->debug('There are ' . count($contract->getItems()) . ' items for contract $contract->getId()', ['contract' => $contract]);
+
         /** @var ContractItem[] $activeItems */
         $activeItems = [];
 
@@ -155,9 +157,12 @@ class InvoiceService
                 $this->getActivePricing($item->getPricings());
                 $activeItems[] = $item;
             } catch (NoActivePricingException) {
+                $this->logger->debug('No active pricing for item ' . $item->getId());
                 continue;
             }
         }
+
+        $this->logger->debug('There are ' . count($activeItems) . ' active items for contract ' . $contract->getId(), ['activeItems' => $activeItems]);
 
         $itemsBody = [];
 
