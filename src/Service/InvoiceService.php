@@ -193,6 +193,7 @@ class InvoiceService
                 'discount' => '0',
                 'discount_val' => 0,
                 'discount_type' => 'fixed',
+                'tax' => 0
             ];
         }
 
