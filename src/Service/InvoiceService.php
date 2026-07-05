@@ -191,6 +191,7 @@ class InvoiceService
                 'price' => strval($price),
                 'total' => strval($total),
                 'discount' => '0',
+                'discount_val' => 0,
                 'discount_type' => 'fixed',
             ];
         }
